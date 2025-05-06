@@ -1,23 +1,20 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
-
 use ServerTimeClock\ServerClock;
-use Psr\Clock\ClockInterface;
 
-function describeClock(ClockInterface $clock): void {
-    $now = $clock->now();
+require 'vendor/autoload.php';
 
-    echo "== Clock Info ==" . PHP_EOL;
-    echo "Class: " . get_class($clock) . PHP_EOL;
-    echo "Implements: " . implode(', ', class_implements($clock)) . PHP_EOL;
-    echo "Now: " . $now->format(DATE_ATOM) . PHP_EOL;
-    echo "Timezone: " . $now->getTimezone()->getName() . PHP_EOL;
-    echo PHP_EOL;
-}
+$config = [
+    'client' => 'WorldTimeApi', // preferred
+    'credentials' => [
+        'IpGeoLocation' => '71fba5dbb71e4e87a94cea31783d9f2a',  // Example key for IpGeolocation
+        // 'WorldTimeApi' => 'TOKEN',                           // Example key for WorldTimeAPI
+    ],
+];
 
-$clock = new ServerClock(); // default server timezone
-describeClock($clock);
+$clock = new ServerClock($config);
 
-$kyivClock = new ServerClock('Europe/Kyiv');
-describeClock($kyivClock);
+echo "Current date/time: " . $clock->now()->format('Y-m-d H:i:s') . PHP_EOL;
+echo "Timezone: " . $clock->getTimezone()->getName() . PHP_EOL;
+echo "Used client: " . $clock->getClientName() . PHP_EOL;
+

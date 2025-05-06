@@ -2,38 +2,21 @@
 
 namespace ServerTimeClock;
 
-use Psr\Clock\ClockInterface;
+use ServerTimeClock\Client\TimeApiClient;
 use DateTimeImmutable;
 use DateTimeZone;
 use RuntimeException;
-use ServerTimeClock\Client\IpGeolocationApiClient;
-use ServerTimeClock\Client\WorldTimeApiClient;
-use ServerTimeClock\Client\TimeApiIoClient;
 
-/**
- * PSR-20 compatible clock that returns the current server time in its local timezone.
- */
-class ServerClock implements ClockInterface
+class ServerClock
 {
-    private DateTimeZone $timezone;
+    private TimeApiClient $client;
+    private array $data;
 
-    /**
-     * @throws RuntimeException if timezone is not supported or available
-     */
-    public function __construct(?string $timezone = null)
+    public function __construct(array $config)
     {
-
-        //$client = new IpGeolocationApiClient('71fba5dbb71e4e87a94cea31783d9f2a');
-        //$client = new WorldTimeApiClient();
-        $client = new TimeApiIoClient();
-        $data = $client->fetch();
-        print_r($data);
-
-        try {
-            $this->timezone = new DateTimeZone($timezone ?? date_default_timezone_get());
-        } catch (\Exception $e) {
-            throw new RuntimeException('Invalid or unavailable timezone: ' . $e->getMessage(), 0, $e);
-        }
+        // Get the client and data through ClientManager
+        $manager = new ClientManager($config);
+        $this->data = $manager->getAvailableClientData(); // Fetch data immediately
     }
 
     /**
@@ -43,7 +26,7 @@ class ServerClock implements ClockInterface
      */
     public function now(): DateTimeImmutable
     {
-        return new DateTimeImmutable('now', $this->timezone);
+        return new DateTimeImmutable($this->getFormattedTime(), $this->getTimezone());
     }
 
     /**
@@ -53,6 +36,49 @@ class ServerClock implements ClockInterface
      */
     public function getTimezone(): DateTimeZone
     {
-        return $this->timezone;
+        try {
+            $timezone = new DateTimeZone($this->getData()['timezone'] ?? 'Unknown');
+        } catch (\Exception $e) {
+            throw new RuntimeException('Invalid or unavailable timezone: ' . $e->getMessage(), 0, $e);
+        }
+        return $timezone;
+    }
+    /**
+     * Returns the client name used to fetch the time data.
+     *
+     * @return string
+     */
+    public function getClientName(): string
+    {
+        return $this->getData()['client_name'] ?? 'Unknown';
+    }
+
+    /**
+     * Returns the data retrieved from the client
+     *
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+    /**
+     * Returns time data in a convenient format
+     *
+     * @return string
+     */
+    public function getFormattedTime(): string
+    {
+        $data = $this->getData();
+        return sprintf(
+            '%d-%02d-%02d %02d:%02d:%02d.%03d',
+            $data['year'],
+            $data['month'],
+            $data['day'],
+            $data['hour'],
+            $data['minute'],
+            $data['seconds'],
+            $data['milli_seconds']
+        );
     }
 }
