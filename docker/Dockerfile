@@ -1,6 +1,6 @@
 FROM php:8.3-cli
 
-# Установим зависимости
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -8,10 +8,10 @@ RUN apt-get update && apt-get install -y \
     mc\
     && rm -rf /var/lib/apt/lists/*
 
-# Установим Composer
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Установим PHPUnit (опционально, можно и через composer require --dev)
+# Install PHPUnit
 RUN composer global require phpunit/phpunit
 
 WORKDIR /app
