@@ -3,7 +3,6 @@
 namespace ServerTimeClock;
 
 use RuntimeException;
-use ServerTimeClock\Client\TimeApiClient;
 use ServerTimeClock\Client\IpGeolocationApiClient;
 use ServerTimeClock\Client\WorldTimeApiClient;
 use ServerTimeClock\Client\TimeApiIoClient;
@@ -40,7 +39,10 @@ class ClientManager
         $credentials = $this->config['credentials'] ?? [];
         if ($preferred) {
             if (!in_array($preferred, self::CLIENTS)) {
-                throw new RuntimeException("Preferred client '$preferred' is not in the list of available clients.");
+                throw new RuntimeException(
+                    "\nPreferred client '$preferred' is not in the list of available clients.\n" .
+                    "Available clients are: " . implode(', ', self::CLIENTS) . ".\n\n"
+                );
             }
             $candidates[] = $preferred;
         }
