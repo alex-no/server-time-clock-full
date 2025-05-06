@@ -1,13 +1,10 @@
-version: '3.8'
-
 services:
   php:
     build:
-      context: ./docker
+      context: .
       dockerfile: docker/Dockerfile
-    container_name: server_time_clock
+    container_name: server-time-clock
     volumes:
       - ./server-time-clock:/app
-    working_dir: /app
     working_dir: /app
     tty: true
