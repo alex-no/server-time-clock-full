@@ -4,7 +4,6 @@ namespace ServerTimeClock\Tests;
 
 use PHPUnit\Framework\TestCase;
 use ServerTimeClock\ServerClock;
-use DateTimeZone;
 
 class ServerClockTest extends TestCase
 {
@@ -20,7 +19,9 @@ class ServerClockTest extends TestCase
     {
         $clock = new ServerClock($this->config);
         $now = $clock->now();
+        $clientName = $clock->getClientName();
 
+        $this->assertSame('Client Name', $clientName);
         $this->assertInstanceOf(\DateTimeImmutable::class, $now);
     }
 
@@ -28,13 +29,18 @@ class ServerClockTest extends TestCase
     {
         $clock = new ServerClock($this->config);
         $now = $clock->now();
+        $clientName = $clock->getClientName();
 
-        $this->assertSame('timezone', $now->getTimezone()->getName());
+        $this->assertSame('Client Name', $clientName);
+        $this->assertSame(\DateTimeZone::class, $now->getTimezone()->getName());
     }
 
-    // public function testInvalidTimezoneThrowsException()
-    // {
-    //     $this->expectException(\RuntimeException::class);
-    //     new ServerClock('Invalid/Timezone');
-    // }
+    public function testInvalidClintThrowsException()
+    {
+        $this->expectException(\RuntimeException::class);
+        $config = $this->config;
+        $config['client'] = 'InvalidClient';
+        
+        new ServerClock($config);
+    }
 }
