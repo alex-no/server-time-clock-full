@@ -6,8 +6,15 @@ use RuntimeException;
 
 abstract class BaseTimeApiClient
 {
+    /**
+     * Timeout in seconds for cURL requests
+     */
     const TIMEOUT = 5;
-    
+
+    /**
+     * Executes a cURL request with the given options.
+     * Throws an exception if the request fails or if the HTTP status code is 4xx or 5xx.
+     */
     protected function executeCurl(array $curlOpt): string
     {
         $curl = curl_init();
@@ -25,6 +32,10 @@ abstract class BaseTimeApiClient
         return $response;
     }
 
+    /**
+     * Fetches data from the API and decodes the JSON response.
+     * Throws an exception if the response is not valid JSON.
+     */
     protected function fetchAndDecode(array $curlOpt): array
     {
         $response = $this->executeCurl($curlOpt);

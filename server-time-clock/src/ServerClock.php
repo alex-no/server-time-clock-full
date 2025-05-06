@@ -23,12 +23,11 @@ class ServerClock implements ClockInterface
     public function __construct(?string $timezone = null)
     {
 
-        $client = new IpGeolocationApiClient('71fba5dbb71e4e87a94cea31783d9f2a');
-        // $client = new WorldTimeApiClient();
-        // $client = new TimeApiIoClient();
+        //$client = new IpGeolocationApiClient('71fba5dbb71e4e87a94cea31783d9f2a');
+        //$client = new WorldTimeApiClient();
+        $client = new TimeApiIoClient();
         $data = $client->fetch();
         print_r($data);
-        die('ok!');
 
         try {
             $this->timezone = new DateTimeZone($timezone ?? date_default_timezone_get());
