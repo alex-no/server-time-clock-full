@@ -2,14 +2,12 @@
 
 namespace ServerTimeClock;
 
-use ServerTimeClock\Client\TimeApiClient;
 use DateTimeImmutable;
 use DateTimeZone;
 use RuntimeException;
 
 class ServerClock
 {
-    private TimeApiClient $client;
     private array $data;
 
     public function __construct(array $config)
