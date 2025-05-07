@@ -1,6 +1,6 @@
 <?php
 
-namespace ServerTimeClock;
+namespace ServerTimeClock\Internal;
 
 use RuntimeException;
 use ServerTimeClock\Client\IpGeolocationApiClient;
